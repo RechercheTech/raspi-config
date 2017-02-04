@@ -724,6 +724,7 @@ do_boot_behaviour() {
   fi
 }
 
+# TODO: Migrate to Network Manager
 get_boot_wait() {
   if test -e /etc/systemd/system/dhcpcd.service.d/wait.conf; then
     echo 0
@@ -732,6 +733,7 @@ get_boot_wait() {
   fi
 }
 
+# TODO: Migrate to Network Manager
 do_boot_wait() {
   get_init_sys
   if [ $SYSTEMD -eq 0 ]; then
@@ -777,7 +779,7 @@ get_boot_splash() {
 }
 
 do_boot_splash() {
-  if [ ! -e /usr/share/plymouth/themes/pix/pix.script ]; then
+  if [ ! -e /usr/share/plymouth/themes/default.plymouth ]; then
     if [ "$INTERACTIVE" = True ]; then
       whiptail --msgbox "The splash screen is not installed so cannot be activated" 20 60 2
     fi
