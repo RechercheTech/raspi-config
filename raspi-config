@@ -323,54 +323,6 @@ do_change_pass() {
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
-do_configure_keyboard() {
-  dpkg-reconfigure keyboard-configuration &&
-  printf "Reloading keymap. This may take a short while\n" &&
-  invoke-rc.d keyboard-setup start || return $?
-  udevadm trigger --subsystem-match=input --action=change
-  return 0
-}
-
-do_change_locale() {
-  dpkg-reconfigure locales
-}
-
-do_change_timezone() {
-  dpkg-reconfigure tzdata
-}
-
-get_wifi_country() {
-   grep country= /etc/wpa_supplicant/wpa_supplicant.conf | cut -d "=" -f 2
-}
-
-do_wifi_country() {
-  oIFS="$IFS"
-  if [ "$INTERACTIVE" = True ]; then
-    IFS="/"
-    value=$(cat /usr/share/zoneinfo/iso3166.tab | tail -n +26 | tr '\t' '/' | tr '\n' '/')
-    COUNTRY=$(whiptail --menu "Select the country in which the Pi is to be used" 20 60 10 ${value} 3>&1 1>&2 2>&3)
-  else
-    COUNTRY=$1
-    true
-  fi
-  if [ $? -eq 0 ];then
-    if [ -e /etc/wpa_supplicant/wpa_supplicant.conf ]; then
-        if grep -q "^country=" /etc/wpa_supplicant/wpa_supplicant.conf ; then
-            sed -i "s/^country=.*/country=$COUNTRY/g" /etc/wpa_supplicant/wpa_supplicant.conf
-        else
-            sed -i "1i country=$COUNTRY" /etc/wpa_supplicant/wpa_supplicant.conf
-        fi
-    else
-        echo "country=$COUNTRY" > /etc/wpa_supplicant/wpa_supplicant.conf
-    fi
-    if [ "$INTERACTIVE" = True ]; then
-        whiptail --msgbox "Wi-fi country set to $COUNTRY" 20 60 1
-    fi
-    ASK_TO_REBOOT=1
-  fi
-  IFS=$oIFS
-}
-
 get_hostname() {
     cat /etc/hostname | tr -d " \t\n\r"
 }
@@ -1504,35 +1456,6 @@ if [ -n "${OPT_MEMORY_SPLIT:-}" ]; then
   set_memory_split "${OPT_MEMORY_SPLIT}"
   exit 0
 fi
-
-do_internationalisation_menu() {
-  if is_ssh ; then
-  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Localisation Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-    "I1 Change Locale" "Set up language and regional settings to match your location" \
-    "I2 Change Timezone" "Set up timezone to match your location" \
-    "I4 Change Wi-fi Country" "Set the legal channels used in your country" \
-    3>&1 1>&2 2>&3)
-  else
-  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Localisation Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-    "I1 Change Locale" "Set up language and regional settings to match your location" \
-    "I2 Change Timezone" "Set up timezone to match your location" \
-    "I3 Change Keyboard Layout" "Set the keyboard layout to match your keyboard" \
-    "I4 Change Wi-fi Country" "Set the legal channels used in your country" \
-    3>&1 1>&2 2>&3)
-  fi
-  RET=$?
-  if [ $RET -eq 1 ]; then
-    return 0
-  elif [ $RET -eq 0 ]; then
-    case "$FUN" in
-      I1\ *) do_change_locale ;;
-      I2\ *) do_change_timezone ;;
-      I3\ *) do_configure_keyboard ;;
-      I4\ *) do_wifi_country ;;
-      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
-    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
-  fi
-}
 
 do_interface_menu() {
   if ! is_pi ; then
