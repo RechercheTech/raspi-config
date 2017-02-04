@@ -7,7 +7,6 @@ INTERACTIVE=True
 ASK_TO_REBOOT=0
 BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
 CONFIG=/boot/config.txt
-CURRENT_UID=$(id -u)
 
 is_pi () {
 	grep -q BCM27 /proc/cpuinfo
@@ -48,10 +47,6 @@ get_pi_type() {
    else
       echo 0
    fi
-}
-
-get_current_user() {
-    DEFAULT_USER=$(getent passwd "$CURRENT_UID" | cut -d: -f1)
 }
 
 is_live() {
@@ -318,8 +313,8 @@ do_overscan() {
 }
 
 do_change_pass() {
-  whiptail --msgbox "You will now be asked to enter a new password for the user: $CURRENT_USER" 20 60 1
-  passwd ${CURRENT_USER} &&
+  whiptail --msgbox "You will now be asked to enter a new password for the user: $SUDO_USER" 20 60 1
+  passwd ${SUDO_USER} &&
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
@@ -1401,7 +1396,6 @@ if [ "$INTERACTIVE" = True ]; then
   [ -e $CONFIG ] || touch $CONFIG
   get_init_sys
   calc_wt_size
-  get_current_user
   while true; do
     FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
       "1 Change User Password" "Change password for the default user (pi)" \
