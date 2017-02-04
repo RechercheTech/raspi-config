@@ -1320,83 +1320,6 @@ get_json_string_val() {
   sed -n -e "s/^[[:space:]]*\"$2\"[[:space:]]*:[[:space:]]*\"\(.*\)\"[[:space:]]*,$/\1/p" $1
 }
 
-# TODO: This is probably broken
-do_apply_os_config() {
-  [ -e /boot/os_config.json ] || return 0
-  NOOBSFLAVOUR=$(get_json_string_val /boot/os_config.json flavour)
-  NOOBSLANGUAGE=$(get_json_string_val /boot/os_config.json language)
-  NOOBSKEYBOARD=$(get_json_string_val /boot/os_config.json keyboard)
-
-  if [ -n "$NOOBSFLAVOUR" ]; then
-    printf "Setting flavour to %s based on os_config.json from NOOBS. May take a while\n" "$NOOBSFLAVOUR"
-
-    printf "Unrecognised flavour. Ignoring\n"
-  fi
-
-  # TODO: currently ignores en_gb settings as we assume we are running in a 
-  # first boot context, where UK English settings are default
-  case "$NOOBSLANGUAGE" in
-    "en")
-      if [ "$NOOBSKEYBOARD" = "gb" ]; then
-        DEBLANGUAGE="" # UK english is the default, so ignore
-      else
-        DEBLANGUAGE="en_US.UTF-8"
-      fi
-      ;;
-    "de")
-      DEBLANGUAGE="de_DE.UTF-8"
-      ;;
-    "fi")
-      DEBLANGUAGE="fi_FI.UTF-8"
-      ;;
-    "fr")
-      DEBLANGUAGE="fr_FR.UTF-8"
-      ;;
-    "hu")
-      DEBLANGUAGE="hu_HU.UTF-8"
-      ;;
-    "ja")
-      DEBLANGUAGE="ja_JP.UTF-8"
-      ;;
-    "nl")
-      DEBLANGUAGE="nl_NL.UTF-8"
-      ;;
-    "pt")
-      DEBLANGUAGE="pt_PT.UTF-8"
-      ;;
-    "ru")
-      DEBLANGUAGE="ru_RU.UTF-8"
-      ;;
-    "zh_CN")
-      DEBLANGUAGE="zh_CN.UTF-8"
-      ;;
-    *)
-      printf "Language '%s' not handled currently. Run sudo raspi-config to set up" "$NOOBSLANGUAGE"
-      ;;
-  esac
-
-  if [ -n "$DEBLANGUAGE" ]; then
-    printf "Setting language to %s based on os_config.json from NOOBS. May take a while\n" "$DEBLANGUAGE"
-    cat << EOF | debconf-set-selections
-locales   locales/locales_to_be_generated multiselect     $DEBLANGUAGE UTF-8
-EOF
-    rm /etc/locale.gen
-    dpkg-reconfigure -f noninteractive locales
-    update-locale LANG="$DEBLANGUAGE"
-    cat << EOF | debconf-set-selections
-locales   locales/default_environment_locale select       $DEBLANGUAGE
-EOF
-  fi
-
-  if [ -n "$NOOBSKEYBOARD" -a "$NOOBSKEYBOARD" != "gb" ]; then
-    printf "Setting keyboard layout to %s based on os_config.json from NOOBS. May take a while\n" "$NOOBSKEYBOARD"
-    sed -i /etc/default/keyboard -e "s/^XKBLAYOUT.*/XKBLAYOUT=\"$NOOBSKEYBOARD\"/"
-    dpkg-reconfigure -f noninteractive keyboard-configuration
-    invoke-rc.d keyboard-setup start
-  fi
-  return 0
-}
-
 nonint() {
     $*
 }
@@ -1422,11 +1345,6 @@ do
     do_expand_rootfs
     printf "Please reboot\n"
     exit 0
-    ;;
-  --apply-os-config)
-    INTERACTIVE=False
-    do_apply_os_config
-    exit $?
     ;;
   nonint)
     INTERACTIVE=False
