@@ -92,17 +92,7 @@ you have heavily customised your installation.\
 }
 
 get_can_expand() {
-  get_init_sys
-  if [ $SYSTEMD -eq 1 ]; then
-    ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
-  else
-    if ! [ -h /dev/root ]; then
-      echo 1
-      exit
-    fi
-    ROOT_PART=$(readlink /dev/root)
-  fi
-
+  ROOT_PART=$(mount | sed -n 's|^/dev/\(.*\) on / .*|\1|p')
   PART_NUM=${ROOT_PART#mmcblk0p}
   if [ "$PART_NUM" = "$ROOT_PART" ]; then
     echo 1
