@@ -824,12 +824,6 @@ get_rgpio() {
 }
 
 do_rgpio() {
-  get_init_sys
-  if [ $SYSTEMD -eq 0 ]; then
-    whiptail --msgbox "This option can only be selected when using systemd" 20 60 2
-    return 1
-  fi
-
   DEFAULT=--defaultno
   if [ $(get_rgpio) -eq 0 ]; then
     DEFAULT=
@@ -844,7 +838,6 @@ do_rgpio() {
     mkdir -p /etc/systemd/system/pigpiod.service.d/
     cat > /etc/systemd/system/pigpiod.service.d/public.conf << EOF
 [Service]
-ExecStart=
 ExecStart=/usr/bin/pigpiod
 EOF
     STATUS=enabled
