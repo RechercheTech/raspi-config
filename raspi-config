@@ -292,34 +292,6 @@ do_change_pass() {
   whiptail --msgbox "Password changed successfully" 20 60 1
 }
 
-get_hostname() {
-    cat /etc/hostname | tr -d " \t\n\r"
-}
-
-do_hostname() {
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --msgbox "\
-Please note: RFCs mandate that a hostname's labels \
-may contain only the ASCII letters 'a' through 'z' (case-insensitive), 
-the digits '0' through '9', and the hyphen.
-Hostname labels cannot begin or end with a hyphen. 
-No other symbols, punctuation characters, or blank spaces are permitted.\
-" 20 70 1
-  fi
-  CURRENT_HOSTNAME=`cat /etc/hostname | tr -d " \t\n\r"`
-  if [ "$INTERACTIVE" = True ]; then
-    NEW_HOSTNAME=$(whiptail --inputbox "Please enter a hostname" 20 60 "$CURRENT_HOSTNAME" 3>&1 1>&2 2>&3)
-  else
-    NEW_HOSTNAME=$1
-    true
-  fi
-  if [ $? -eq 0 ]; then
-    echo $NEW_HOSTNAME > /etc/hostname
-    sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
-    ASK_TO_REBOOT=1
-  fi
-}
-
 do_memory_split() { # Memory Split
   if [ -e /boot/start_cd.elf ]; then
     # New-style memory split setting
@@ -1373,13 +1345,12 @@ if [ "$INTERACTIVE" = True ]; then
   while true; do
     FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
       "1 Change User Password" "Change password for the default user (pi)" \
-      "2 Hostname" "Set the visible name for this Pi on a network" \
-      "3 Boot Options" "Configure options for start-up" \
-      "4 Interfacing Options" "Configure connections to peripherals" \
-      "5 Overclock" "Configure overclocking for your Pi" \
-      "6 Advanced Options" "Configure advanced settings" \
-      "7 Update" "Update this tool to the latest version" \
-      "8 About raspi-config" "Information about this configuration tool" \
+      "2 Boot Options" "Configure options for start-up" \
+      "3 Interfacing Options" "Configure connections to peripherals" \
+      "4 Overclock" "Configure overclocking for your Pi" \
+      "5 Advanced Options" "Configure advanced settings" \
+      "6 Update" "Update this tool to the latest version" \
+      "7 About raspi-config" "Information about this configuration tool" \
       3>&1 1>&2 2>&3)
     RET=$?
     if [ $RET -eq 1 ]; then
@@ -1387,13 +1358,12 @@ if [ "$INTERACTIVE" = True ]; then
     elif [ $RET -eq 0 ]; then
       case "$FUN" in
         1\ *) do_change_pass ;;
-        2\ *) do_hostname ;;
-        3\ *) do_boot_menu ;;
-        4\ *) do_interface_menu ;;
-        5\ *) do_overclock ;;
-        6\ *) do_advanced_menu ;;
-        7\ *) do_update ;;
-        8\ *) do_about ;;
+        2\ *) do_boot_menu ;;
+        3\ *) do_interface_menu ;;
+        4\ *) do_overclock ;;
+        5\ *) do_advanced_menu ;;
+        6\ *) do_update ;;
+        7\ *) do_about ;;
         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
       esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
     else
