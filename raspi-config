@@ -1636,19 +1636,17 @@ if [ "$INTERACTIVE" = True ]; then
         "1 Change User Password" "Change password for the default user (pi)" \
         "2 Hostname" "Set the visible name for this Pi on a network" \
         "3 Boot Options" "Configure options for start-up" \
-        "4 Localisation Options" "Set up language and regional settings to match your location" \
-        "5 Interfacing Options" "Configure connections to peripherals" \
-        "6 Overclock" "Configure overclocking for your Pi" \
-        "7 Advanced Options" "Configure advanced settings" \
-        "8 Update" "Update this tool to the latest version" \
-        "9 About raspi-config" "Information about this configuration tool" \
+        "4 Interfacing Options" "Configure connections to peripherals" \
+        "5 Overclock" "Configure overclocking for your Pi" \
+        "6 Advanced Options" "Configure advanced settings" \
+        "7 Update" "Update this tool to the latest version" \
+        "8 About raspi-config" "Information about this configuration tool" \
         3>&1 1>&2 2>&3)
     else
       FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
         "1 Change User Password" "Change password for the default user (pi)" \
         "2 Hostname" "Set the visible name for this PC on a network" \
         "3 Boot Options" "Configure options for start-up" \
-        "4 Localisation Options" "Set up language and regional settings to match your location" \
         "5 SSH" "Enable/Disable remote command line access to your PC using SSH" \
         "8 Update" "Update this tool to the latest version" \
         "9 About raspi-config" "Information about this configuration tool" \
@@ -1662,12 +1660,11 @@ if [ "$INTERACTIVE" = True ]; then
         1\ *) do_change_pass ;;
         2\ *) do_hostname ;;
         3\ *) do_boot_menu ;;
-        4\ *) do_internationalisation_menu ;;
-        5\ *) do_interface_menu ;;
-        6\ *) do_overclock ;;
-        7\ *) do_advanced_menu ;;
-        8\ *) do_update ;;
-        9\ *) do_about ;;
+        4\ *) do_interface_menu ;;
+        5\ *) do_overclock ;;
+        6\ *) do_advanced_menu ;;
+        7\ *) do_update ;;
+        8\ *) do_about ;;
         *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
       esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
     else
