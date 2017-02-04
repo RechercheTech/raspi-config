@@ -644,12 +644,6 @@ do_serial() {
     ASK_TO_REBOOT=1
   fi
   if [ $RET -eq 0 ]; then
-    if [ $SYSTEMD -eq 0 ]; then
-      sed -i /etc/inittab -e "s|^#\(.*:.*:respawn:.*ttyAMA0\)|\1|"
-      if ! grep -q "^T.*:.*:respawn:.*ttyAMA0" /etc/inittab; then
-        printf "T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100\n" >> /etc/inittab
-      fi
-    fi
     if grep -q "console=ttyAMA0" $CMDLINE ; then
       if [ -e /proc/device-tree/aliases/serial0 ]; then
         sed -i $CMDLINE -e "s/console=ttyAMA0/console=serial0/"
@@ -665,9 +659,6 @@ do_serial() {
     SSTATUS=enabled
     HSTATUS=enabled
   elif [ $RET -eq 1 ]; then
-    if [ $SYSTEMD -eq 0 ]; then
-      sed -i /etc/inittab -e "s|^.*:.*:respawn:.*ttyAMA0|#&|"
-    fi
     sed -i $CMDLINE -e "s/console=ttyAMA0,[0-9]\+ //"
     sed -i $CMDLINE -e "s/console=serial0,[0-9]\+ //"
     SSTATUS=disabled
@@ -702,35 +693,6 @@ get_boot_cli() {
     echo 0
   else
     echo 1
-  fi
-}
-
-get_autologin() {
-  get_init_sys
-  if [ $(get_boot_cli) -eq 0 ]; then
-    # booting to CLI - check the autologin in getty or initd */
-    if [ $SYSTEMD -eq 1 ]; then
-      # systemd used - check getty */
-      if grep -q autologin /etc/systemd/system/getty.target.wants/getty@tty1.service ; then
-        echo 0
-      else
-        echo 1
-      fi
-    else
-      # systemd not used - check initd */
-      if grep -q login /etc/inittab ; then
-        echo 0
-      else
-        echo 1
-      fi
-    fi
-  else
-    # booting to desktop - check the autologin for lightdm */
-    if grep -q "^autologin-user=pi" /etc/lightdm/lightdm.conf ; then
-      echo 0
-    else
-      echo 1
-    fi
   fi
 }
 
