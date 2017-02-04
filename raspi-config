@@ -1019,25 +1019,28 @@ do_gldriver() {
       mv /usr/share/X11/xorg.conf.d/99-fbturbo.~ /usr/share/X11/xorg.conf.d/99-fbturbo.conf
     fi
   fi
-  if echo "$GLOPT" | grep -q -E "1" ; then
-    if [ ! -e /etc/xdg/autostart/xcompmgr.desktop ] ; then
-      cat << EOF > /etc/xdg/autostart/xcompmgr.desktop
-[Desktop Entry]
-Type=Application
-Name=compton
-Comment=Start Compton compositor
-NoDisplay=true
-Exec=compton --backend glx --unredir-if-possible --glx-swap-method buffer-age --glx-no-stencil --paint-on-overlay --vsync opengl
-EOF
-    fi
-    if [ ! -e /usr/bin/compton ]; then
-      sudo apt-get -y install compton
-    fi
-  else
-    if [ -e /etc/xdg/autostart/xcompmgr.desktop ] ; then
-      rm /etc/xdg/autostart/xcompmgr.desktop
-    fi
-  fi
+
+  # TODO: Make Ubuntu flavour compatible.
+  #if echo "$GLOPT" | grep -q -E "1" ; then
+
+    #if [ ! -e /etc/xdg/autostart/xcompmgr.desktop ] ; then
+      #cat << EOF > /etc/xdg/autostart/xcompmgr.desktop
+#[Desktop Entry]
+#Type=Application
+#Name=compton
+#Comment=Start Compton compositor
+#NoDisplay=true
+#Exec=compton --backend glx --unredir-if-possible --glx-swap-method buffer-age --glx-no-stencil --paint-on-overlay --vsync opengl
+#EOF
+    #fi
+    #if [ ! -e /usr/bin/compton ]; then
+      #sudo apt-get -y install compton
+    #fi
+  #else
+    #if [ -e /etc/xdg/autostart/xcompmgr.desktop ] ; then
+      #rm /etc/xdg/autostart/xcompmgr.desktop
+    #fi
+  #fi
   whiptail --msgbox "$STATUS" 20 60 1
  }
 
