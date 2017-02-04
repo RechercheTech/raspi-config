@@ -452,10 +452,6 @@ get_ssh() {
 }
 
 do_ssh() {
-  if [ -e /var/log/regen_ssh_keys.log ] && ! grep -q "^finished" /var/log/regen_ssh_keys.log; then
-    whiptail --msgbox "Initial ssh key generation still running. Please wait and try again." 20 60 2
-    return 1
-  fi
   DEFAULT=--defaultno
   if [ $(get_ssh) -eq 0 ]; then
     DEFAULT=
@@ -467,12 +463,12 @@ do_ssh() {
     RET=$1
   fi
   if [ $RET -eq 0 ]; then
-    update-rc.d ssh enable &&
-    invoke-rc.d ssh start &&
+    systemctl enable ssh &&
+    systemctl start ssh &&
     STATUS=enabled
   elif [ $RET -eq 1 ]; then
-    update-rc.d ssh disable &&
-    invoke-rc.d ssh stop &&
+    systemctl disable ssh &&
+    systemctl stop ssh &&
     STATUS=disabled
   else
     return $RET
