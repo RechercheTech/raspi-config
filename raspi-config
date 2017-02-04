@@ -1458,35 +1458,31 @@ if [ -n "${OPT_MEMORY_SPLIT:-}" ]; then
 fi
 
 do_interface_menu() {
-  if ! is_pi ; then
-	do_ssh
-  else
-    FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-      "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
-      "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
-      "P3 VNC" "Enable/Disable graphical remote access to your Pi using RealVNC" \
-      "P4 SPI" "Enable/Disable automatic loading of SPI kernel module" \
-      "P5 I2C" "Enable/Disable automatic loading of I2C kernel module" \
-      "P6 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
-      "P7 1-Wire" "Enable/Disable one-wire interface" \
-      "P8 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
-      3>&1 1>&2 2>&3)
-    RET=$?
-    if [ $RET -eq 1 ]; then
-      return 0
-    elif [ $RET -eq 0 ]; then
-      case "$FUN" in
-        P1\ *) do_camera ;;
-        P2\ *) do_ssh ;;
-        P3\ *) do_vnc ;;
-        P4\ *) do_spi ;;
-        P5\ *) do_i2c ;;
-        P6\ *) do_serial ;;
-        P7\ *) do_onewire ;;
-        P8\ *) do_rgpio ;;
-        *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
-      esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
-    fi
+  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+    "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
+    "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
+    "P3 VNC" "Enable/Disable graphical remote access to your Pi using RealVNC" \
+    "P4 SPI" "Enable/Disable automatic loading of SPI kernel module" \
+    "P5 I2C" "Enable/Disable automatic loading of I2C kernel module" \
+    "P6 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
+    "P7 1-Wire" "Enable/Disable one-wire interface" \
+    "P8 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
+    3>&1 1>&2 2>&3)
+  RET=$?
+  if [ $RET -eq 1 ]; then
+    return 0
+  elif [ $RET -eq 0 ]; then
+    case "$FUN" in
+      P1\ *) do_camera ;;
+      P2\ *) do_ssh ;;
+      P3\ *) do_vnc ;;
+      P4\ *) do_spi ;;
+      P5\ *) do_i2c ;;
+      P6\ *) do_serial ;;
+      P7\ *) do_onewire ;;
+      P8\ *) do_rgpio ;;
+      *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
+    esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
 }
 
@@ -1554,27 +1550,16 @@ if [ "$INTERACTIVE" = True ]; then
   calc_wt_size
   get_current_user
   while true; do
-	  if is_pi ; then
-      FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
-        "1 Change User Password" "Change password for the default user (pi)" \
-        "2 Hostname" "Set the visible name for this Pi on a network" \
-        "3 Boot Options" "Configure options for start-up" \
-        "4 Interfacing Options" "Configure connections to peripherals" \
-        "5 Overclock" "Configure overclocking for your Pi" \
-        "6 Advanced Options" "Configure advanced settings" \
-        "7 Update" "Update this tool to the latest version" \
-        "8 About raspi-config" "Information about this configuration tool" \
-        3>&1 1>&2 2>&3)
-    else
-      FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
-        "1 Change User Password" "Change password for the default user (pi)" \
-        "2 Hostname" "Set the visible name for this PC on a network" \
-        "3 Boot Options" "Configure options for start-up" \
-        "5 SSH" "Enable/Disable remote command line access to your PC using SSH" \
-        "8 Update" "Update this tool to the latest version" \
-        "9 About raspi-config" "Information about this configuration tool" \
-        3>&1 1>&2 2>&3)
-    fi
+    FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
+      "1 Change User Password" "Change password for the default user (pi)" \
+      "2 Hostname" "Set the visible name for this Pi on a network" \
+      "3 Boot Options" "Configure options for start-up" \
+      "4 Interfacing Options" "Configure connections to peripherals" \
+      "5 Overclock" "Configure overclocking for your Pi" \
+      "6 Advanced Options" "Configure advanced settings" \
+      "7 Update" "Update this tool to the latest version" \
+      "8 About raspi-config" "Information about this configuration tool" \
+      3>&1 1>&2 2>&3)
     RET=$?
     if [ $RET -eq 1 ]; then
       do_finish
