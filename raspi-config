@@ -760,22 +760,6 @@ do_serial() {
   fi
 }
 
-disable_raspi_config_at_boot() {
-  if [ -e /etc/profile.d/raspi-config.sh ]; then
-    rm -f /etc/profile.d/raspi-config.sh
-    if [ $SYSTEMD -eq 1 ]; then
-      if [ -e /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf ]; then
-        rm /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
-      fi
-    else
-      sed -i /etc/inittab \
-        -e "s/^#\(.*\)#\s*RPICFG_TO_ENABLE\s*/\1/" \
-        -e "/#\s*RPICFG_TO_DISABLE/d"
-    fi
-    telinit q
-  fi
-}
-
 get_boot_cli() {
   if service lightdm status | grep -q inactive; then
     echo 0
@@ -1256,7 +1240,6 @@ do_resolution() {
 }
 
 do_finish() {
-  disable_raspi_config_at_boot
   if [ $ASK_TO_REBOOT -eq 1 ]; then
     whiptail --yesno "Would you like to reboot now?" 20 60 2
     if [ $? -eq 0 ]; then # yes
