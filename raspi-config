@@ -1,5 +1,5 @@
 #!/bin/sh
-# Part of raspi-config https://github.com/RPi-Distro/raspi-config
+# Part of raspi-config https://github.com/flexiondotorg/raspi-config
 #
 # See LICENSE file for copyright and license details
 
@@ -451,12 +451,16 @@ do_ssh() {
     RET=$1
   fi
   if [ $RET -eq 0 ]; then
-    systemctl enable ssh &&
-    systemctl start ssh &&
+    systemctl enable sshguard
+    systemctl start sshguard
+    systemctl enable ssh
+    systemctl start ssh
     STATUS=enabled
   elif [ $RET -eq 1 ]; then
-    systemctl disable ssh &&
-    systemctl stop ssh &&
+    systemctl disable ssh
+    systemctl stop ssh
+    systemctl disable sshguard
+    systemctl stop sshguard
     STATUS=disabled
   else
     return $RET
