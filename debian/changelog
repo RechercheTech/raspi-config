@@ -1,3 +1,9 @@
+raspi-config (20170205-1~xenial1.0) xenial; urgency=medium
+
+  * Forked to add Ubuntu compatibility and remove redundant features.
+
+ -- Martin Wimpress <martin.wimpress@ubuntu.com>  Sun, 05 Feb 2017 00:31:36 +0000
+
 raspi-config (20170127) jessie; urgency=medium
 
   * Prevent keyboard language from being configured over SSH
