@@ -62,10 +62,6 @@ is_ssh() {
   fi
 }
 
-get_init_sys() {
-  SYSTEMD=1
-}
-
 calc_wt_size() {
   # NOTE: it's tempting to redirect stderr to /dev/null, so supress error 
   # output from tput. However in this case, tput detects neither stdout or 
@@ -637,7 +633,6 @@ do_serial() {
     whiptail --yesno "Would you like a login shell to be accessible over serial?" $DEFAULTS 20 60 2
     RET=$?
   else
-    get_init_sys
     RET=$1
   fi
   if [ $RET -eq $CURRENTS ]; then
@@ -703,7 +698,6 @@ do_boot_behaviour() {
       "B2 Desktop" "Desktop GUI" \
       3>&1 1>&2 2>&3)
   else
-    get_init_sys
     BOOTOPT=$1
     true
   fi
@@ -735,12 +729,6 @@ get_boot_wait() {
 
 # TODO: Migrate to Network Manager
 do_boot_wait() {
-  get_init_sys
-  if [ $SYSTEMD -eq 0 ]; then
-    whiptail --msgbox "This option can only be selected when using systemd" 20 60 2
-    return 1
-  fi
-
   DEFAULT=--defaultno
   if [ $(get_boot_wait) -eq 0 ]; then
     DEFAULT=
@@ -1296,7 +1284,6 @@ if [ "$INTERACTIVE" = True ]; then
     exit 1
   fi
   [ -e $CONFIG ] || touch $CONFIG
-  get_init_sys
   calc_wt_size
   while true; do
     FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Setup Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Finish --ok-button Select \
