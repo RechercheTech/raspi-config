@@ -1,2 +1,2 @@
-raspi-config /usr/bin
 init_resize.sh /usr/lib/raspi-config
+raspi-config /usr/bin
