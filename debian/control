@@ -1,11 +1,11 @@
 Source: raspi-config
 Section: utils
 Priority: extra
-Maintainer: Serge Schneider <serge@raspberrypi.org>
+Maintainer: Martin Wimpress <code@flexion.org>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.6
-Vcs-Git: git://git@github.com:RPi-Distro/raspi-config.git
-Vcs-Browser: https://github.com/RPi-Distro/raspi-config
+Vcs-Git: git://git@github.com:flexiondotorg/raspi-config.git
+Vcs-Browser: https://github.com/flexiondotorg/raspi-config
 
 Package: raspi-config
 Architecture: all
