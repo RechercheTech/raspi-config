@@ -477,41 +477,6 @@ do_ssh() {
   fi
 }
 
-get_vnc() {
-  if systemctl status vncserver-x11-serviced.service  | grep -q inactive; then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
-do_vnc() {
-  DEFAULT=--defaultno
-  if [ $(get_vnc) -eq 0 ]; then
-    DEFAULT=
-  fi
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --yesno "Would you like the VNC Server to be enabled?" $DEFAULT 20 60 2
-    RET=$?
-  else
-    RET=$1
-  fi
-  if [ $RET -eq 0 ]; then
-    systemctl enable vncserver-x11-serviced.service &&
-    systemctl start vncserver-x11-serviced.service &&
-    STATUS=enabled
-  elif [ $RET -eq 1 ]; then
-    systemctl disable vncserver-x11-serviced.service &&
-    systemctl stop vncserver-x11-serviced.service &&
-    STATUS=disabled
-  else
-    return $RET
-  fi
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --msgbox "The VNC Server is $STATUS" 20 60 1
-  fi
-}
-
 get_spi() {
   if grep -q -E "^(device_tree_param|dtparam)=([^,]*,)*spi(=(on|true|yes|1))?(,.*)?$" $CONFIG; then
     echo 0
@@ -1202,12 +1167,11 @@ do_interface_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
     "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
     "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
-    "P3 VNC" "Enable/Disable graphical remote access to your Pi using RealVNC" \
-    "P4 SPI" "Enable/Disable automatic loading of SPI kernel module" \
-    "P5 I2C" "Enable/Disable automatic loading of I2C kernel module" \
-    "P6 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
-    "P7 1-Wire" "Enable/Disable one-wire interface" \
-    "P8 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
+    "P3 SPI" "Enable/Disable automatic loading of SPI kernel module" \
+    "P4 I2C" "Enable/Disable automatic loading of I2C kernel module" \
+    "P5 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
+    "P6 1-Wire" "Enable/Disable one-wire interface" \
+    "P7 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
     3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -1216,12 +1180,11 @@ do_interface_menu() {
     case "$FUN" in
       P1\ *) do_camera ;;
       P2\ *) do_ssh ;;
-      P3\ *) do_vnc ;;
-      P4\ *) do_spi ;;
-      P5\ *) do_i2c ;;
-      P6\ *) do_serial ;;
-      P7\ *) do_onewire ;;
-      P8\ *) do_rgpio ;;
+      P3\ *) do_spi ;;
+      P4\ *) do_i2c ;;
+      P5\ *) do_serial ;;
+      P6\ *) do_onewire ;;
+      P7\ *) do_rgpio ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
