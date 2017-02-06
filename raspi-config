@@ -938,7 +938,7 @@ do_pitop() {
   fi
 
   if [ "$INTERACTIVE" = True ]; then
-    if [ "${STATUS}" == "enabled" ] && [ $(get_i2c) -eq 1 ]; then
+    if [ "$STATUS" = enabled ] && [ $(get_i2c) -eq 1 ]; then
       whiptail --msgbox "The pi-top support is $STATUS, but you also need to enable i2c support." 20 60 1
     else
       whiptail --msgbox "The pi-top support is $STATUS" 20 60 1
