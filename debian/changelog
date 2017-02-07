@@ -1,3 +1,10 @@
+raspi-config (20170207-1~xenial1.1) xenial; urgency=medium
+
+  * Add pi-top support.
+  * Remove VNC support.
+
+ -- Martin Wimpress <martin.wimpress@ubuntu.com>  Mon, 06 Feb 2017 17:48:04 +0000
+
 raspi-config (20170205-1~xenial1.0) xenial; urgency=medium
 
   * Forked to add Ubuntu compatibility and remove redundant features.
