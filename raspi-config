@@ -6,7 +6,7 @@
 INTERACTIVE=True
 ASK_TO_REBOOT=0
 BLACKLIST=/etc/modprobe.d/raspi-blacklist.conf
-CONFIG=/boot/config.txt
+CONFIG=/boot/firmware/config.txt
 
 is_pi () {
 	grep -q BCM27 /proc/cpuinfo
@@ -14,7 +14,7 @@ is_pi () {
 }
 
 if is_pi ; then
-  CMDLINE=/boot/cmdline.txt
+  CMDLINE=/boot/firmware/cmdline.txt
 else
   CMDLINE=/proc/cmdline
 fi
@@ -283,9 +283,9 @@ do_change_pass() {
 }
 
 do_memory_split() { # Memory Split
-  if [ -e /boot/start_cd.elf ]; then
+  if [ -e /boot/firmware/start_cd.elf ]; then
     # New-style memory split setting
-    ## get current memory split from /boot/config.txt
+    ## get current memory split from /boot/firmware/config.txt
 	arm=$(vcgencmd get_mem arm | cut -d '=' -f 2 | cut -d 'M' -f 1)
 	gpu=$(vcgencmd get_mem gpu | cut -d '=' -f 2 | cut -d 'M' -f 1)
 	tot=$(($arm+$gpu))
@@ -339,7 +339,7 @@ get_current_memory_split() {
   AVAILABLE_SPLITS="128 192 224 240"
   MEMSPLIT_DESCRIPTION=""
   for SPLIT in $AVAILABLE_SPLITS;do
-    if [ -e /boot/arm${SPLIT}_start.elf ] && cmp /boot/arm${SPLIT}_start.elf /boot/start.elf >/dev/null 2>&1;then
+    if [ -e /boot/firmware/arm${SPLIT}_start.elf ] && cmp /boot/firmware/arm${SPLIT}_start.elf /boot/firmware/start.elf >/dev/null 2>&1;then
       CURRENT_MEMSPLIT=$SPLIT
       MEMSPLIT_DESCRIPTION="Current: ${CURRENT_MEMSPLIT}MiB for ARM, $((256 - $CURRENT_MEMSPLIT))MiB for VideoCore"
       break
@@ -348,7 +348,7 @@ get_current_memory_split() {
 }
 
 set_memory_split() {
-  cp -a /boot/arm${1}_start.elf /boot/start.elf
+  cp -a /boot/firmware/arm${1}_start.elf /boot/firmware/start.elf
   sync
 }
 
@@ -815,7 +815,7 @@ get_camera() {
 }
 
 do_camera() {
-  if [ ! -e /boot/start_x.elf ]; then
+  if [ ! -e /boot/firmware/start_x.elf ]; then
     whiptail --msgbox "Your firmware appears to be out of date (no start_x.elf). Please update" 20 60 2
     return 1
   fi
@@ -946,7 +946,7 @@ do_gldriver() {
     whiptail --msgbox "GL driver cannot be used on Pi 1 or Pi 0" 20 60 2
     return 1
   fi
-  if [ ! -e /boot/overlays/vc4-kms-v3d.dtbo ]; then
+  if [ ! -e /boot/firmware/overlays/vc4-kms-v3d.dtbo ]; then
     whiptail --msgbox "Driver and kernel not present on your system. Please update" 20 60 2
     return 1
   fi
@@ -1040,8 +1040,8 @@ do_gldriver() {
  }
 
 do_update() {
-  apt-get update &&
-  apt-get install raspi-config &&
+  apt-get -y update &&
+  apt-get -y install raspi-config &&
   printf "Sleeping 5 seconds before reloading raspi-config\n" &&
   sleep 5 &&
   exec raspi-config
@@ -1291,7 +1291,7 @@ do_boot_menu() {
 # Interactive use loop
 #
 if [ "$INTERACTIVE" = True ]; then
-  if is_pi && ! mountpoint -q /boot; then
+  if is_pi && ! mountpoint -q /boot/firmware; then
     whiptail --msgbox "The boot partition is not mounted - cannot configure. Note that raspi-config is intended for use on Raspbian only and cannot be guaranteed to work on other operating systems." 20 60 1
     exit 1
   fi

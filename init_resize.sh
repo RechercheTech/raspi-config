@@ -1,7 +1,7 @@
 #!/bin/sh
 
 reboot_pi () {
-  umount /boot
+  umount /boot/firmware
   sync
   echo b > /proc/sysrq-trigger
   sleep 5
@@ -30,7 +30,7 @@ get_variables () {
   ROOT_DEV="/dev/${ROOT_DEV_NAME}"
   ROOT_PART_NUM=`cat /sys/block/${ROOT_DEV_NAME}/${ROOT_PART_NAME}/partition`
 
-  BOOT_PART_DEV=`cat /proc/mounts | grep " /boot " | cut -d " " -f 1`
+  BOOT_PART_DEV=`cat /proc/mounts | grep " /boot/firmware " | cut -d " " -f 1`
   BOOT_PART_NAME=`echo $BOOT_PART_DEV | cut -d "/" -f 3`
   BOOT_DEV_NAME=`echo /sys/block/*/${BOOT_PART_NAME} | cut -d "/" -f 4`
   BOOT_PART_NUM=`cat /sys/block/${BOOT_DEV_NAME}/${BOOT_PART_NAME}/partition`
@@ -86,9 +86,9 @@ if ! parted -m $ROOT_DEV u s resizepart $ROOT_PART_NUM $TARGET_END; then
 mount -t proc proc /proc
 mount -t sysfs sys /sys
 
-mount /boot
-sed -i 's| init=/usr/lib/raspi-config/init_resize.sh||' /boot/cmdline.txt
-mount /boot -o remount,ro
+mount /boot/firmware
+sed -i 's| init=/usr/lib/raspi-config/init_resize.sh||' /boot/firmware/cmdline.txt
+mount /boot/firmware -o remount,ro
 sync
 
 echo 1 > /proc/sys/kernel/sysrq
