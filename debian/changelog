@@ -1,5 +1,6 @@
-raspi-config (20180518-1~bionic1.0) bionic; urgency=medium
+raspi-config (20180518-1~bionic1.1) bionic; urgency=medium
 
+  * Add f2fs support to resize2fs_once.
   * Add separate settings for serial hardware and console
   * Formatting fixes
   * Add option to enable predictable network interface names
