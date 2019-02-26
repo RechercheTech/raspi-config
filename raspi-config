@@ -160,11 +160,25 @@ cat <<EOF > /etc/init.d/resize2fs_once &&
 
 case "\$1" in
   start)
-    log_daemon_msg "Starting resize2fs_once" &&
-    resize2fs /dev/$ROOT_PART &&
-    touch /.resized &&
-    update-rc.d resize2fs_once remove &&
-    rm /etc/init.d/resize2fs_once &&
+    log_daemon_msg "Starting resize2fs_once"
+    ROOT_DEV=$(findmnt / -o source -n)
+    ROOT_FS=$(findmnt / -o fstype -n)
+    if [ "\$ROOT_FS" = "ext4" ]; then
+      echo "resize2fs -F -f \$ROOT_DEV"
+      touch /.resized
+      update-rc.d resize2fs_once remove
+      rm /etc/init.d/resize2fs_once
+    elif [ "\$ROOT_FS" = "f2fs" ]; then
+      echo "resize.f2fs \$ROOT_DEV"
+      touch /.resized
+      update-rc.d resize2fs_once remove
+      rm /etc/init.d/resize2fs_once
+    else
+      log_daemon_msg "WARNING! Unknown filesystem, skipping filesystem resize."
+      update-rc.d resize2fs_once remove
+      rm /etc/init.d/resize2fs_once
+      exit
+    fi
     log_end_msg \$?
     ;;
   *)
