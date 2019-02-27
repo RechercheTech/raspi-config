@@ -1,17 +1,17 @@
-raspi-config (20180518-1~bionic1.1) bionic; urgency=medium
+raspi-config (20180518-1~bionic1.2) bionic; urgency=medium
 
-  * Add f2fs support to resize2fs_once.
-  * Add separate settings for serial hardware and console
-  * Formatting fixes
-  * Add option to enable predictable network interface names
-  * Only restart pigpio daemon if it is running
+  * Migrade filesystem expansion to growpartfs.
+  * Add separate settings for serial hardware and console.
+  * Formatting fixes.
+  * Add option to enable predictable network interface names.
+  * Only restart pigpio daemon if it is running.
   * Allow splash screen with fake KMS.
-  * Define memory split units
-  * Bump compat level to 9
-  * Start service on all runlevels
-  * Run init_resize.sh through shellcheck
-  * Improve init_resize.sh reliability
-  * Added detection of 0 W boards
+  * Define memory split units.
+  * Bump compat level to 9.
+  * Start service on all runlevels.
+  * Run init_resize.sh through shellcheck.
+  * Improve init_resize.sh reliability.
+  * Added detection of 0 W boards.
 
  -- Martin Wimpress <martin.wimpress@ubuntu.com>  Tue, 26 Feb 2019 12:30:44 +0000
 
