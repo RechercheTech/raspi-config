@@ -1,2 +1,4 @@
-init_resize.sh /usr/lib/raspi-config
+growpartfs /usr/bin
 raspi-config /usr/bin
+resize-fs /usr/bin
+resize-fs.service /lib/systemd/system/
