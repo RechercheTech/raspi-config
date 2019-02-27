@@ -5,7 +5,7 @@
 # Root Partition
 PART_DEV=`findmnt / -o source -n`
 
-# Grow the partition 
+# Grow the partition
 growpartfs $PART_DEV
 touch /.resized
 
@@ -13,4 +13,8 @@ touch /.resized
 partprobe
 
 # Remove thyself
-sudo systemctl disable resize-fs.service
+systemctl disable resize-fs.service
+
+# Reboot
+sync
+reboot
