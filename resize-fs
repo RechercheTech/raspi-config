@@ -1,0 +1,16 @@
+#!/bin/sh
+# This script will attempt to resize the partition and filesystem in order to fill the sdcard
+
+# Get device and partition numbers/names
+# Root Partition
+PART_DEV=`findmnt / -o source -n`
+
+# Grow the partition 
+growpartfs $PART_DEV
+touch /.resized
+
+# Reload the partitions in the kernel
+partprobe
+
+# Remove thyself
+sudo systemctl disable resize-fs.service
