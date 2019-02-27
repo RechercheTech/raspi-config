@@ -10,11 +10,11 @@ Vcs-Browser: https://github.com/flexiondotorg/raspi-config
 Package: raspi-config
 Architecture: all
 Depends: alsa-utils,
+         cloud-guest-utils,
          lua5.1,
          parted,
          psmisc,
          whiptail,
          ${misc:Depends},
-Recommends: triggerhappy,
 Description: Raspberry Pi configuration tool
  A simple configuration tool for common Raspberry Pi administrative tasks
