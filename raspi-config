@@ -82,10 +82,10 @@ you have heavily customised your installation.\
 }
 
 do_expand_rootfs() {
-  resize-fs
+  systemctl enable resize-fs.service
 
   if [ "$INTERACTIVE" = True ]; then
-    whiptail --msgbox "Root partition has been resized.\nThe filesystem will be enlarged upon the next reboot" 20 60 2
+    whiptail --msgbox "The filesystem will be enlarged upon the next reboot" 20 60 2
   fi
 }
 
