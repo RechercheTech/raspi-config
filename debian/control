@@ -8,7 +8,7 @@ Vcs-Git: git://git@github.com:flexiondotorg/raspi-config.git
 Vcs-Browser: https://github.com/flexiondotorg/raspi-config
 
 Package: raspi-config
-Architecture: all
+Architecture: any
 Depends: alsa-utils,
          cloud-guest-utils,
          lua5.1,
