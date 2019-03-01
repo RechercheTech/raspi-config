@@ -1,9 +1,13 @@
 [Unit]
 Description=Resize-FS one time run.
+Before=basic.target
+After=local-fs.target sysinit.target
+DefaultDependencies=no
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/usr/bin/resize-fs
+ExecStartPost=/bin/systemctl disable resize-fs.service
 
 [Install]
-WantedBy=default.target
+WantedBy=basic.target
