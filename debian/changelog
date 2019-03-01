@@ -1,6 +1,6 @@
-raspi-config (20180518-1~bionic1.2) bionic; urgency=medium
+raspi-config (20180518-1~bionic1.5) bionic; urgency=medium
 
-  * Migrade filesystem expansion to growpartfs.
+  * Migrate filesystem expansion to growpartfs.
   * Add separate settings for serial hardware and console.
   * Formatting fixes.
   * Add option to enable predictable network interface names.
