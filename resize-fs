@@ -3,7 +3,7 @@
 
 # Get device and partition numbers/names
 # Root Partition
-PART_DEV=`findmnt / -o source -n`
+PART_DEV=$(findmnt / -o source -n)
 
 # Grow the partition
 growpartfs $PART_DEV
@@ -11,10 +11,3 @@ touch /.resized
 
 # Reload the partitions in the kernel
 partprobe
-
-# Remove thyself
-systemctl disable resize-fs.service
-
-# Reboot
-sync
-reboot
