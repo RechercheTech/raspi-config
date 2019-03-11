@@ -813,50 +813,6 @@ do_onewire() {
   fi
 }
 
-get_pitop() {
-  if [ ! -e /etc/systemd/system/halt.target.wants/pt-poweroff.service ] && \
-     [ ! -e /etc/systemd/system/poweroff.target.wants/pt-poweroff.service ]; then
-    echo 0
-  else
-    echo 1
-  fi
-}
-
-do_pitop() {
-  DEFAULT=--defaultno
-  CURRENT=0
-  if [ $(get_pitop) -eq 0 ]; then
-    DEFAULT=
-    CURRENT=1
-  fi
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --yesno "Would you like the pi-top poweroff and brightness support to be enabled?" $DEFAULT 20 60 2
-    RET=$?
-  else
-    RET=$1
-  fi
-  if [ $RET -eq $CURRENT ]; then
-    ASK_TO_REBOOT=1
-  fi
-  if [ $RET -eq 0 ]; then
-    systemctl enable pt-poweroff.service
-    STATUS=enabled
-  elif [ $RET -eq 1 ]; then
-    systemctl disable pt-poweroff.service
-    STATUS=disabled
-  else
-    return $RET
-  fi
-
-  if [ "$INTERACTIVE" = True ]; then
-    if [ "$STATUS" = enabled ] && [ $(get_spi) -eq 1 ]; then
-      whiptail --msgbox "The pi-top support is $STATUS, but you also need to enable SPI support." 20 60 1
-    else
-      whiptail --msgbox "The pi-top support is $STATUS" 20 60 1
-    fi
-  fi
-}
-
 do_gldriver() {
   if is_pione || is_pizero; then
     whiptail --msgbox "GL driver cannot be used on Pi 1 or Pi 0" 20 60 2
@@ -1137,28 +1093,15 @@ if [ -n "${OPT_MEMORY_SPLIT:-}" ]; then
 fi
 
 do_interface_menu() {
-  if [ -e /usr/bin/pi-top-poweroff ]; then
-    FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-    "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
-    "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
-    "P3 SPI" "Enable/Disable automatic loading of SPI kernel module" \
-    "P4 I2C" "Enable/Disable automatic loading of I2C kernel module" \
-    "P5 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
-    "P6 1-Wire" "Enable/Disable one-wire interface" \
-    "P7 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
-    "P8 Pi-Top" "Enable/Disable pi-top support" \
-    3>&1 1>&2 2>&3)
-  else
-    FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
-    "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
-    "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
-    "P3 SPI" "Enable/Disable automatic loading of SPI kernel module" \
-    "P4 I2C" "Enable/Disable automatic loading of I2C kernel module" \
-    "P5 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
-    "P6 1-Wire" "Enable/Disable one-wire interface" \
-    "P7 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
-    3>&1 1>&2 2>&3)
-  fi
+  FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
+  "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
+  "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
+  "P3 SPI" "Enable/Disable automatic loading of SPI kernel module" \
+  "P4 I2C" "Enable/Disable automatic loading of I2C kernel module" \
+  "P5 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
+  "P6 1-Wire" "Enable/Disable one-wire interface" \
+  "P7 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
+  3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
     return 0
@@ -1171,7 +1114,6 @@ do_interface_menu() {
       P5\ *) do_serial ;;
       P6\ *) do_onewire ;;
       P7\ *) do_rgpio ;;
-      P8\ *) do_pitop ;;
       *) whiptail --msgbox "Programmer error: unrecognized option" 20 60 1 ;;
     esac || whiptail --msgbox "There was an error running option $FUN" 20 60 1
   fi
