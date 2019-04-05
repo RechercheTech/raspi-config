@@ -343,49 +343,6 @@ clear_overclock () {
   fi
 }
 
-get_ssh() {
-  if service ssh status | grep -q inactive; then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
-do_ssh() {
-  if [ -e /var/log/regen_ssh_keys.log ] && ! grep -q "^finished" /var/log/regen_ssh_keys.log; then
-    whiptail --msgbox "Initial ssh key generation still running. Please wait and try again." 20 60 2
-    return 1
-  fi
-  DEFAULT=--defaultno
-  if [ $(get_ssh) -eq 0 ]; then
-    DEFAULT=
-  fi
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --yesno "Would you like the SSH server to be enabled?" $DEFAULT 20 60 2
-    RET=$?
-  else
-    RET=$1
-  fi
-  if [ $RET -eq 0 ]; then
-    systemctl enable sshguard
-    systemctl start sshguard
-    systemctl enable ssh
-    systemctl start ssh
-    STATUS=enabled
-  elif [ $RET -eq 1 ]; then
-    systemctl disable ssh
-    systemctl stop ssh
-    systemctl disable sshguard
-    systemctl stop sshguard
-    STATUS=disabled
-  else
-    return $RET
-  fi
-  if [ "$INTERACTIVE" = True ]; then
-    whiptail --msgbox "The SSH server is $STATUS" 20 60 1
-  fi
-}
-
 get_spi() {
   if grep -q -E "^(device_tree_param|dtparam)=([^,]*,)*spi(=(on|true|yes|1))?(,.*)?$" $CONFIG; then
     echo 0
@@ -1095,12 +1052,11 @@ fi
 do_interface_menu() {
   FUN=$(whiptail --title "Raspberry Pi Software Configuration Tool (raspi-config)" --menu "Interfacing Options" $WT_HEIGHT $WT_WIDTH $WT_MENU_HEIGHT --cancel-button Back --ok-button Select \
   "P1 Camera" "Enable/Disable connection to the Raspberry Pi Camera" \
-  "P2 SSH" "Enable/Disable remote command line access to your Pi using SSH" \
-  "P3 SPI" "Enable/Disable automatic loading of SPI kernel module" \
-  "P4 I2C" "Enable/Disable automatic loading of I2C kernel module" \
-  "P5 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
-  "P6 1-Wire" "Enable/Disable one-wire interface" \
-  "P7 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
+  "P2 SPI" "Enable/Disable automatic loading of SPI kernel module" \
+  "P3 I2C" "Enable/Disable automatic loading of I2C kernel module" \
+  "P4 Serial" "Enable/Disable shell and kernel messages on the serial connection" \
+  "P5 1-Wire" "Enable/Disable one-wire interface" \
+  "P6 Remote GPIO" "Enable/Disable remote access to GPIO pins" \
   3>&1 1>&2 2>&3)
   RET=$?
   if [ $RET -eq 1 ]; then
@@ -1108,7 +1064,6 @@ do_interface_menu() {
   elif [ $RET -eq 0 ]; then
     case "$FUN" in
       P1\ *) do_camera ;;
-      P2\ *) do_ssh ;;
       P3\ *) do_spi ;;
       P4\ *) do_i2c ;;
       P5\ *) do_serial ;;
